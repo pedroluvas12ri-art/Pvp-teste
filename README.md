@@ -10,12 +10,12 @@ local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
 local Whitelist = {}
 
-local OpenButtonVisible = true
-local OpenButtonDraggable = true
-
 local HighlightEnabled = false
 local ArmEnabled = false
 local ArmSize = 1
+
+local OpenButtonVisible = true
+local OpenButtonDraggable = true
 
 --==================================================
 -- GUI
@@ -31,6 +31,7 @@ ScreenGui.Parent = PlayerGui
 --==================================================
 
 local OpenButton = Instance.new("TextButton")
+OpenButton.Name = "OpenButton"
 OpenButton.Size = UDim2.fromOffset(45, 45)
 OpenButton.Position = UDim2.new(0, 10, 0.5, -22)
 OpenButton.Text = "☰"
@@ -38,6 +39,7 @@ OpenButton.TextSize = 22
 OpenButton.Font = Enum.Font.GothamBold
 OpenButton.TextColor3 = Color3.new(1, 1, 1)
 OpenButton.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
+OpenButton.BorderSizePixel = 0
 OpenButton.Parent = ScreenGui
 
 local OpenCorner = Instance.new("UICorner")
@@ -45,10 +47,11 @@ OpenCorner.CornerRadius = UDim.new(1, 0)
 OpenCorner.Parent = OpenButton
 
 --==================================================
--- PAINEL
+-- PAINEL PRINCIPAL
 --==================================================
 
 local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.fromOffset(360, 280)
 MainFrame.Position = UDim2.new(0.5, -180, 0.5, -140)
 MainFrame.BackgroundColor3 = Color3.fromRGB(20, 20, 25)
@@ -64,7 +67,7 @@ MainCorner.Parent = MainFrame
 --==================================================
 
 local Title = Instance.new("TextLabel")
-Title.Size = UDim2.new(1, -50, 0, 45)
+Title.Size = UDim2.new(1, -55, 0, 45)
 Title.Position = UDim2.fromOffset(10, 0)
 Title.Text = "PATO"
 Title.TextSize = 21
@@ -74,6 +77,10 @@ Title.BackgroundTransparency = 1
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.Parent = MainFrame
 
+--==================================================
+-- FECHAR
+--==================================================
+
 local CloseButton = Instance.new("TextButton")
 CloseButton.Size = UDim2.fromOffset(35, 35)
 CloseButton.Position = UDim2.new(1, -42, 0, 5)
@@ -82,6 +89,7 @@ CloseButton.TextSize = 17
 CloseButton.Font = Enum.Font.GothamBold
 CloseButton.TextColor3 = Color3.new(1, 1, 1)
 CloseButton.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
+CloseButton.BorderSizePixel = 0
 CloseButton.Parent = MainFrame
 
 local CloseCorner = Instance.new("UICorner")
@@ -104,7 +112,7 @@ SideCorner.CornerRadius = UDim.new(0, 8)
 SideCorner.Parent = SideBar
 
 --==================================================
--- CONTEÚDO
+-- ÁREA DE CONTEÚDO
 --==================================================
 
 local Content = Instance.new("Frame")
@@ -112,6 +120,7 @@ Content.Size = UDim2.new(1, -125, 1, -55)
 Content.Position = UDim2.fromOffset(118, 48)
 Content.BackgroundColor3 = Color3.fromRGB(27, 27, 33)
 Content.BorderSizePixel = 0
+Content.ClipsDescendants = true
 Content.Parent = MainFrame
 
 local ContentCorner = Instance.new("UICorner")
@@ -119,14 +128,13 @@ ContentCorner.CornerRadius = UDim.new(0, 8)
 ContentCorner.Parent = Content
 
 --==================================================
--- ABAS
+-- CRIAR ABA
 --==================================================
-
-local Tabs = {}
 
 local function CreateTab(Name, Y)
 
     local Button = Instance.new("TextButton")
+
     Button.Size = UDim2.new(1, -10, 0, 38)
     Button.Position = UDim2.fromOffset(5, Y)
     Button.Text = Name
@@ -141,8 +149,6 @@ local function CreateTab(Name, Y)
     Corner.CornerRadius = UDim.new(0, 7)
     Corner.Parent = Button
 
-    Tabs[Name] = Button
-
     return Button
 end
 
@@ -152,7 +158,7 @@ local WhiteTab = CreateTab("WHITELIST", 96)
 local MiscTab = CreateTab("MISC", 140)
 
 --==================================================
--- FUNÇÕES
+-- FUNÇÕES DE UI
 --==================================================
 
 local function ClearContent()
@@ -162,26 +168,30 @@ local function ClearContent()
     end
 end
 
-local function CreateLabel(Text, Y)
+local function CreateLabel(Text, Y, Height)
 
     local Label = Instance.new("TextLabel")
-    Label.Size = UDim2.new(1, -20, 0, 35)
+
+    Label.Size = UDim2.new(1, -20, 0, Height or 35)
     Label.Position = UDim2.fromOffset(10, Y)
     Label.Text = Text
-    Label.TextSize = 15
+    Label.TextSize = 14
     Label.Font = Enum.Font.GothamBold
     Label.TextColor3 = Color3.new(1, 1, 1)
     Label.BackgroundTransparency = 1
     Label.TextXAlignment = Enum.TextXAlignment.Left
+    Label.TextYAlignment = Enum.TextYAlignment.Center
+    Label.TextWrapped = true
     Label.Parent = Content
 
     return Label
 end
 
-local function CreateButton(Text, Y)
+local function CreateButton(Text, Y, Height)
 
     local Button = Instance.new("TextButton")
-    Button.Size = UDim2.new(1, -20, 0, 38)
+
+    Button.Size = UDim2.new(1, -20, 0, Height or 38)
     Button.Position = UDim2.fromOffset(10, Y)
     Button.Text = Text
     Button.TextSize = 14
@@ -199,26 +209,28 @@ local function CreateButton(Text, Y)
 end
 
 --==================================================
--- ESP
+-- ABA ESP
 --==================================================
 
 local function ShowESP()
 
     ClearContent()
 
-    CreateLabel("ESP", 10)
+    CreateLabel("ESP", 8, 35)
 
     local HighlightButton
 
     if HighlightEnabled then
         HighlightButton = CreateButton(
             "Highlight: LIGADO",
-            55
+            48
         )
+        HighlightButton.BackgroundColor3 =
+            Color3.fromRGB(50, 120, 70)
     else
         HighlightButton = CreateButton(
             "Highlight: DESLIGADO",
-            55
+            48
         )
     end
 
@@ -229,84 +241,189 @@ local function ShowESP()
         ShowESP()
     end)
 
-    local Info = CreateLabel(
-        "Controle visual do Highlight.",
-        105
+    CreateLabel(
+        "Controle do Highlight da interface.",
+        95,
+        45
+    )
+end
+
+--==================================================
+-- ABA BRAÇO
+--==================================================
+
+local function ShowArm()
+
+    ClearContent()
+
+    CreateLabel("BRAÇO", 8, 35)
+
+    local ToggleButton
+
+    if ArmEnabled then
+
+        ToggleButton = CreateButton(
+            "Braço: LIGADO",
+            48
+        )
+
+        ToggleButton.BackgroundColor3 =
+            Color3.fromRGB(50, 120, 70)
+
+    else
+
+        ToggleButton = CreateButton(
+            "Braço: DESLIGADO",
+            48
+        )
+    end
+
+    ToggleButton.MouseButton1Click:Connect(function()
+
+        ArmEnabled = not ArmEnabled
+
+        ShowArm()
+    end)
+
+    CreateLabel(
+        "Valor do tamanho: " .. string.format("%.1f", ArmSize),
+        95,
+        35
     )
 
-    Info.TextWrapped = true
-    Info.Size = UDim2.new(1, -20, 0, 45)
+    local MinusButton = CreateButton("-", 135)
+
+    MinusButton.MouseButton1Click:Connect(function()
+
+        ArmSize = math.max(1, ArmSize - 0.1)
+
+        ShowArm()
+    end)
+
+    local PlusButton = CreateButton("+", 180)
+
+    PlusButton.MouseButton1Click:Connect(function()
+
+        ArmSize = math.min(5, ArmSize + 0.1)
+
+        ShowArm()
+    end)
+
+    CreateLabel(
+        "Valor mínimo: 1.0 | máximo: 5.0",
+        225,
+        35
+    )
 end
 
 --==================================================
--- BRAÇO + HITBOX NA MESMA ESCALA
+-- ABA WHITELIST
 --==================================================
 
-local function ResizeArm(Player)
+local function ShowWhitelist()
 
-	if Player == LocalPlayer then
-		return
-	end
+    ClearContent()
 
-	local Character = Player.Character
+    CreateLabel("WHITELIST", 8, 35)
 
-	if not Character then
-		return
-	end
+    local Y = 48
 
-	local Arm =
-		Character:FindFirstChild("RightUpperArm")
-		or Character:FindFirstChild("Right Arm")
+    for _, Player in ipairs(Players:GetPlayers()) do
 
-	if not Arm or not Arm:IsA("BasePart") then
-		return
-	end
+        if Player ~= LocalPlayer then
 
-	-- Guarda o tamanho original
-	if not OriginalArmSizes[Player] then
-		OriginalArmSizes[Player] = Arm.Size
-	end
+            local IsWhitelisted =
+                Whitelist[Player.UserId] == true
 
-	-- O tamanho visual e a área do braço
-	-- acompanham a mesma escala
-	Arm.Size = OriginalArmSizes[Player] * ArmScale
+            local Text
+
+            if IsWhitelisted then
+                Text = "✓ " .. Player.Name
+            else
+                Text = Player.Name
+            end
+
+            local Button = CreateButton(
+                Text,
+                Y
+            )
+
+            if IsWhitelisted then
+                Button.BackgroundColor3 =
+                    Color3.fromRGB(50, 120, 70)
+            end
+
+            Button.MouseButton1Click:Connect(function()
+
+                if Whitelist[Player.UserId] then
+                    Whitelist[Player.UserId] = nil
+                else
+                    Whitelist[Player.UserId] = true
+                end
+
+                ShowWhitelist()
+            end)
+
+            Y += 42
+        end
+    end
+
+    if Y == 48 then
+
+        CreateLabel(
+            "Nenhum outro jogador encontrado.",
+            55,
+            45
+        )
+    end
 end
-
-local function RestoreArm(Player)
-
-	local Character = Player.Character
-
-	if not Character then
-		return
-	end
-
-	local Arm =
-		Character:FindFirstChild("RightUpperArm")
-		or Character:FindFirstChild("Right Arm")
-
-	if Arm and OriginalArmSizes[Player] then
-		Arm.Size = OriginalArmSizes[Player]
-	end
-end
-
-local function UpdateArms()
-
-	for _,Player in ipairs(Players:GetPlayers()) do
-
-		if Player ~= LocalPlayer then
-
-			if ArmEnabled then
-				ResizeArm(Player)
-			else
-				RestoreArm(Player)
-			end
-		end
-	end
-end
-
 
 --==================================================
--- TROCA DE ABAS
+-- ABA MISC
+--==================================================
+
+local function ShowMisc()
+
+    ClearContent()
+
+    CreateLabel("MISC", 8, 35)
+
+    local ButtonText
+
+    if OpenButtonVisible then
+        ButtonText = "Bolinha: VISÍVEL"
+    else
+        ButtonText = "Bolinha: INVISÍVEL"
+    end
+
+    local ToggleButton =
+        CreateButton(ButtonText, 48)
+
+    if OpenButtonVisible then
+        ToggleButton.BackgroundColor3 =
+            Color3.fromRGB(50, 120, 70)
+    end
+
+    ToggleButton.MouseButton1Click:Connect(function()
+
+        OpenButtonVisible = not OpenButtonVisible
+
+        OpenButtonDraggable = OpenButtonVisible
+
+        OpenButton.Visible = OpenButtonVisible
+
+        ShowMisc()
+    end)
+
+    CreateLabel(
+        "Visível: a bolinha pode ser movida.\nInvisível: a bolinha fica imóvel.",
+        95,
+        60
+    )
+end
+
+--==================================================
+-- EVENTOS DAS ABAS
 --==================================================
 
 ESPTab.MouseButton1Click:Connect(ShowESP)
@@ -319,10 +436,12 @@ MiscTab.MouseButton1Click:Connect(ShowMisc)
 --==================================================
 
 CloseButton.MouseButton1Click:Connect(function()
+
     MainFrame.Visible = false
 end)
 
 OpenButton.MouseButton1Click:Connect(function()
+
     MainFrame.Visible = not MainFrame.Visible
 end)
 
@@ -330,7 +449,7 @@ end)
 -- ARRASTAR BOLINHA
 --==================================================
 
-local DraggingButton = false
+local ButtonDragging = false
 local ButtonDragStart
 local ButtonStartPosition
 
@@ -343,7 +462,7 @@ OpenButton.InputBegan:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1
         or Input.UserInputType == Enum.UserInputType.Touch then
 
-        DraggingButton = true
+        ButtonDragging = true
         ButtonDragStart = Input.Position
         ButtonStartPosition = OpenButton.Position
     end
@@ -354,22 +473,47 @@ OpenButton.InputEnded:Connect(function(Input)
     if Input.UserInputType == Enum.UserInputType.MouseButton1
         or Input.UserInputType == Enum.UserInputType.Touch then
 
-        DraggingButton = false
+        ButtonDragging = false
+    end
+end)
+
+--==================================================
+-- ARRASTAR PAINEL E BOLINHA
+--==================================================
+
+local PanelDragging = false
+local PanelDragStart
+local PanelStartPosition
+
+Title.InputBegan:Connect(function(Input)
+
+    if Input.UserInputType == Enum.UserInputType.MouseButton1
+        or Input.UserInputType == Enum.UserInputType.Touch then
+
+        PanelDragging = true
+        PanelDragStart = Input.Position
+        PanelStartPosition = MainFrame.Position
+    end
+end)
+
+Title.InputEnded:Connect(function(Input)
+
+    if Input.UserInputType == Enum.UserInputType.MouseButton1
+        or Input.UserInputType == Enum.UserInputType.Touch then
+
+        PanelDragging = false
     end
 end)
 
 UserInputService.InputChanged:Connect(function(Input)
 
-    if not DraggingButton then
+    if Input.UserInputType ~= Enum.UserInputType.MouseMovement
+        and Input.UserInputType ~= Enum.UserInputType.Touch then
         return
     end
 
-    if not OpenButtonDraggable then
-        return
-    end
-
-    if Input.UserInputType == Enum.UserInputType.MouseMovement
-        or Input.UserInputType == Enum.UserInputType.Touch then
+    -- Mover bolinha
+    if ButtonDragging and OpenButtonDraggable then
 
         local Delta =
             Input.Position - ButtonDragStart
@@ -381,59 +525,44 @@ UserInputService.InputChanged:Connect(function(Input)
             ButtonStartPosition.Y.Offset + Delta.Y
         )
     end
-end)
 
---==================================================
--- ARRASTAR PAINEL
---==================================================
-
-local Dragging = false
-local DragStart
-local StartPosition
-
-Title.InputBegan:Connect(function(Input)
-
-    if Input.UserInputType == Enum.UserInputType.MouseButton1
-        or Input.UserInputType == Enum.UserInputType.Touch then
-
-        Dragging = true
-        DragStart = Input.Position
-        StartPosition = MainFrame.Position
-    end
-end)
-
-Title.InputEnded:Connect(function(Input)
-
-    if Input.UserInputType == Enum.UserInputType.MouseButton1
-        or Input.UserInputType == Enum.UserInputType.Touch then
-
-        Dragging = false
-    end
-end)
-
-UserInputService.InputChanged:Connect(function(Input)
-
-    if not Dragging then
-        return
-    end
-
-    if Input.UserInputType == Enum.UserInputType.MouseMovement
-        or Input.UserInputType == Enum.UserInputType.Touch then
+    -- Mover painel
+    if PanelDragging then
 
         local Delta =
-            Input.Position - DragStart
+            Input.Position - PanelDragStart
 
         MainFrame.Position = UDim2.new(
-            StartPosition.X.Scale,
-            StartPosition.X.Offset + Delta.X,
-            StartPosition.Y.Scale,
-            StartPosition.Y.Offset + Delta.Y
+            PanelStartPosition.X.Scale,
+            PanelStartPosition.X.Offset + Delta.X,
+            PanelStartPosition.Y.Scale,
+            PanelStartPosition.Y.Offset + Delta.Y
         )
     end
 end)
 
 --==================================================
--- ABA INICIAL
+-- ATUALIZAÇÃO DA LISTA DE JOGADORES
+--==================================================
+
+Players.PlayerAdded:Connect(function()
+
+    if MainFrame.Visible then
+        ShowWhitelist()
+    end
+end)
+
+Players.PlayerRemoving:Connect(function(Player)
+
+    Whitelist[Player.UserId] = nil
+
+    if MainFrame.Visible then
+        ShowWhitelist()
+    end
+end)
+
+--==================================================
+-- INICIAR
 --==================================================
 
 ShowESP()
