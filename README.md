@@ -239,158 +239,71 @@ local function ShowESP()
 end
 
 --==================================================
--- BRAÇO
+-- BRAÇO + HITBOX NA MESMA ESCALA
 --==================================================
 
-local function ShowArm()
+local function ResizeArm(Player)
 
-    ClearContent()
+	if Player == LocalPlayer then
+		return
+	end
 
-    CreateLabel("BRAÇO", 10)
+	local Character = Player.Character
 
-    local ToggleButton
+	if not Character then
+		return
+	end
 
-    if ArmEnabled then
-        ToggleButton = CreateButton(
-            "Braço: LIGADO",
-            50
-        )
-    else
-        ToggleButton = CreateButton(
-            "Braço: DESLIGADO",
-            50
-        )
-    end
+	local Arm =
+		Character:FindFirstChild("RightUpperArm")
+		or Character:FindFirstChild("Right Arm")
 
-    ToggleButton.MouseButton1Click:Connect(function()
+	if not Arm or not Arm:IsA("BasePart") then
+		return
+	end
 
-        ArmEnabled = not ArmEnabled
+	-- Guarda o tamanho original
+	if not OriginalArmSizes[Player] then
+		OriginalArmSizes[Player] = Arm.Size
+	end
 
-        ShowArm()
-    end)
-
-    CreateLabel(
-        "Tamanho atual: " .. tostring(ArmSize),
-        100
-    )
-
-    local MinusButton = CreateButton(
-        "-",
-        140
-    )
-
-    local PlusButton = CreateButton(
-        "+",
-        185
-    )
-
-    MinusButton.MouseButton1Click:Connect(function()
-
-        ArmSize = math.max(1, ArmSize - 0.1)
-
-        ShowArm()
-    end)
-
-    PlusButton.MouseButton1Click:Connect(function()
-
-        ArmSize = math.min(10, ArmSize + 0.1)
-
-        ShowArm()
-    end)
-
-    local Info = CreateLabel(
-        "Use + e - para alterar o valor.",
-        230
-    )
-
-    Info.TextWrapped = true
+	-- O tamanho visual e a área do braço
+	-- acompanham a mesma escala
+	Arm.Size = OriginalArmSizes[Player] * ArmScale
 end
 
---==================================================
--- WHITELIST
---==================================================
+local function RestoreArm(Player)
 
-local function ShowWhitelist()
+	local Character = Player.Character
 
-    ClearContent()
+	if not Character then
+		return
+	end
 
-    CreateLabel("Whitelist", 10)
+	local Arm =
+		Character:FindFirstChild("RightUpperArm")
+		or Character:FindFirstChild("Right Arm")
 
-    local Y = 50
-
-    for _, Player in ipairs(Players:GetPlayers()) do
-
-        if Player ~= LocalPlayer then
-
-            local IsWhitelisted =
-                Whitelist[Player.UserId] == true
-
-            local Button = CreateButton(
-                Player.Name ..
-                (IsWhitelisted and "  ✓" or ""),
-                Y
-            )
-
-            if IsWhitelisted then
-                Button.BackgroundColor3 =
-                    Color3.fromRGB(50, 120, 70)
-            end
-
-            Button.MouseButton1Click:Connect(function()
-
-                if Whitelist[Player.UserId] then
-                    Whitelist[Player.UserId] = nil
-                else
-                    Whitelist[Player.UserId] = true
-                end
-
-                ShowWhitelist()
-            end)
-
-            Y += 42
-        end
-    end
+	if Arm and OriginalArmSizes[Player] then
+		Arm.Size = OriginalArmSizes[Player]
+	end
 end
 
---==================================================
--- MISC
---==================================================
+local function UpdateArms()
 
-local function ShowMisc()
+	for _,Player in ipairs(Players:GetPlayers()) do
 
-    ClearContent()
+		if Player ~= LocalPlayer then
 
-    CreateLabel("MISC", 10)
-
-    local ButtonText
-
-    if OpenButtonVisible then
-        ButtonText = "Bolinha: VISÍVEL"
-    else
-        ButtonText = "Bolinha: INVISÍVEL"
-    end
-
-    local ToggleButton =
-        CreateButton(ButtonText, 55)
-
-    ToggleButton.MouseButton1Click:Connect(function()
-
-        OpenButtonVisible = not OpenButtonVisible
-        OpenButtonDraggable = OpenButtonVisible
-
-        OpenButton.Visible = OpenButtonVisible
-
-        ShowMisc()
-    end)
-
-    local Info = CreateLabel(
-        "Visível: pode ser movida.\nInvisível: fica imóvel.",
-        105
-    )
-
-    Info.TextWrapped = true
-    Info.Size = UDim2.new(1, -20, 0, 55)
+			if ArmEnabled then
+				ResizeArm(Player)
+			else
+				RestoreArm(Player)
+			end
+		end
+	end
 end
+
 
 --==================================================
 -- TROCA DE ABAS
